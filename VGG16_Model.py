@@ -35,18 +35,19 @@ tf.set_random_seed(29)    #For Tensorflow
 session_conf = tf.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
 sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
 K.set_session(sess)
-
 #Keras code goes after this
 
 
-#os.chdir("C:/Users/sjcrum/Documents/Data Science Capstone")
-train_path = "PlantImages/train"
-test_path = "PlantImages/test"
-valid_path = "PlantImages/validation"
 
-train_batches = ImageDataGenerator().flow_from_directory(train_path, target_size = (224,224), classes = ['Charlock', 'Scentless Mayweed', 'Shepherds Purse', 'Loose Silky-bent', 'Common wheat', 'Maize', 'Black-grass', 'Small-flowered Cranesbill', 'Sugar beet', 'Cleavers', 'Common Chickweed', 'Fat Hen'], batch_size = 1000)
-test_batches = ImageDataGenerator().flow_from_directory(test_path, target_size = (224,224), classes = ['Charlock', 'Scentless Mayweed', 'Shepherds Purse', 'Loose Silky-bent', 'Common wheat', 'Maize', 'Black-grass', 'Small-flowered Cranesbill', 'Sugar beet', 'Cleavers', 'Common Chickweed', 'Fat Hen'], batch_size = 100)
-valid_batches = ImageDataGenerator().flow_from_directory(valid_path, target_size = (224,224), classes = ['Charlock', 'Scentless Mayweed', 'Shepherds Purse', 'Loose Silky-bent', 'Common wheat', 'Maize', 'Black-grass', 'Small-flowered Cranesbill', 'Sugar beet', 'Cleavers', 'Common Chickweed', 'Fat Hen'], batch_size = 100)
+train_path = "/home/ubuntu/Plant-Species-Recognition/MLTutorial/cats_and_dogs/train/"
+test_path = "/home/ubuntu/Plant-Species-Recognition/MLTutorial/cats_and_dogs/test/"
+valid_path = "/home/ubuntu/Plant-Species-Recognition/MLTutorial/cats_and_dogs/valid/"
+
+#classes = ['Charlock', 'Scentless Mayweed', 'Shepherds Purse', 'Loose Silky-bent', 'Common wheat', 'Maize', 'Black-grass', 'Small-flowered Cranesbill', 'Sugar beet', 'Cleavers', 'Common Chickweed', 'Fat Hen']
+
+train_batches = ImageDataGenerator().flow_from_directory(train_path, target_size = (224,224), classes=['dog', 'cat'] , batch_size = 10)
+test_batches = ImageDataGenerator().flow_from_directory(test_path, target_size = (224,224), classes=['dog', 'cat'], batch_size = 5)
+valid_batches = ImageDataGenerator().flow_from_directory(valid_path, target_size = (224,224), classes=['dog','cat'], batch_size = 5)
 
 
 def plots(ims, figsize=(12, 6), rows=1, interp=False, title=None):
@@ -67,25 +68,25 @@ ims, labels = next(train_batches)
 plots(ims, title = labels)
 
 #### VGG 16 model ####
-# vgg16_model = keras.applications.vgg16.VGG16()
+vgg16_model = keras.applications.vgg16.VGG16()
 #
-# model = Sequential()
-# for layer in vgg16_model.layers[:-1]:
-#     model.add(layer)
-#
-# for layer in model.layers:
-#     layer.trainable = False
-#
-# model.add(Dense(12, activation = 'softmax'))
-#
-# model.summary()
-#
-#
-# #### Training VGG 16 Model ####
-#
-# model.compile(Adam(lr = 0.0001), loss = 'categorical_crossentropy', metrics = ['accuracy'])
-#
-#
-# model.fit_generator(train_batches, steps_per_epoch=44, validation_data = valid_batches,
-#                     validation_steps=35, epochs = 77, verbose = 2)
-#
+model = Sequential()
+for layer in vgg16_model.layers[:-1]:
+    model.add(layer)
+
+for layer in model.layers:
+    layer.trainable = False
+
+model.add(Dense(2, activation = 'softmax'))
+
+model.summary()
+
+
+#### Training VGG 16 Model ####
+
+model.compile(Adam(lr = 0.0001), loss = 'categorical_crossentropy', metrics = ['accuracy'])
+
+
+model.fit_generator(train_batches, steps_per_epoch=35, validation_data = valid_batches,
+                    validation_steps=20, epochs = 10, verbose = 2)
+
